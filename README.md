@@ -208,7 +208,7 @@ npm run seed       # Add sample data to database
 
 ## 📞 Contact Information
 
-**Developer:** Zain Ali  
+**Developer:** Faizan Niaz  
 **Email:** zain.here.63@gmail.com  
 **Project:** TrendoTech E-commerce Platform
 

@@ -1,0 +1,109 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Seller Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/seller/products/add" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                    <a href="/seller/orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/seller/sales-report" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-bar me-2"></i> Sales Report
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h2 class="mb-4">My Orders</h2>
+
+            {{#if successMessage}}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{successMessage}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+            {{#if errorMessage}}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{errorMessage}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Orders Containing Your Products</h5>
+                </div>
+                <div class="card-body p-0">
+                    {{#if orders.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each orders}}
+                                <tr>
+                                    <td><strong>{{orderNumber}}</strong></td>
+                                    <td>
+                                        {{user.name}}<br>
+                                        <small class="text-muted">{{user.email}}</small>
+                                    </td>
+                                    <td>{{formatDate createdAt}}</td>
+                                    <td>
+                                        {{#if (eq paymentMethod 'jazzcash')}}<span class="badge bg-info">JazzCash</span>
+                                        {{else if (eq paymentMethod 'bank_transfer')}}<span class="badge bg-secondary">Bank Transfer</span>
+                                        {{else}}<span class="badge bg-dark">COD</span>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{#if (eq status 'pending')}}<span class="badge bg-warning text-dark">Pending</span>
+                                        {{else if (eq status 'processing')}}<span class="badge bg-info">Processing</span>
+                                        {{else if (eq status 'shipped')}}<span class="badge bg-primary">Shipped</span>
+                                        {{else if (eq status 'delivered')}}<span class="badge bg-success">Delivered</span>
+                                        {{else}}<span class="badge bg-danger">Cancelled</span>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        <a href="/seller/orders/{{_id}}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                        <h5>No orders yet</h5>
+                        <p class="text-muted">Orders for your products will appear here.</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

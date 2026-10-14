@@ -1,0 +1,90 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Add New Blog Post</h3>
+                </div>
+                <div class="card-body p-4">
+                    {{#if formError}}
+                    <div class="alert alert-danger">
+                        {{formError}}
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/blogs/admin/add" method="POST" id="blogForm" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="summary" class="form-label">Summary</label>
+                            <textarea class="form-control" id="summary" name="summary" rows="2" required></textarea>
+                            <div class="form-text">A brief summary of the blog post (displayed in listings).</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="fashion">Fashion</option>
+                                    <option value="technology">Technology</option>
+                                    <option value="lifestyle">Lifestyle</option>
+                                    <option value="business">Business</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="tags" name="tags">
+                                <div class="form-text">Separate tags with commas (e.g. summer, sale, tips).</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label">Featured Image</label>
+                            <input type="file" class="form-control" id="image" name="image" accept="image/*" required>
+                            <div class="form-text">Upload an image for the blog post (JPG, PNG, GIF, etc.).</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="15" required></textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/blogs" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Publish Blog Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Basic client-side validation
+    document.getElementById('blogForm').addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const summary = document.getElementById('summary').value;
+        
+        if (title.length < 5) {
+            e.preventDefault();
+            alert('Title must be at least 5 characters long');
+        }
+        
+        if (summary.length < 10) {
+            e.preventDefault();
+            alert('Summary must be at least 10 characters long');
+        }
+        
+        if (content.length < 50) {
+            e.preventDefault();
+            alert('Content must be at least 50 characters long');
+        }
+    });
+</script> 

@@ -1,0 +1,92 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Seller Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/seller/products/add" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Add New Product</h5>
+                </div>
+                <div class="card-body">
+                    {{#if formError}}
+                    <div class="alert alert-danger mb-4">
+                        {{formError}}
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/seller/products" method="POST" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="price" class="form-label">Price (PKR)</label>
+                                <input type="number" class="form-control" id="price" name="price" min="0.01" step="0.01" required>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="" disabled selected>Select a category</option>
+                                    <option value="men-clothing">Men's Clothing</option>
+                                    <option value="women-clothing">Women's Clothing</option>
+                                    <option value="accessories">Accessories</option>
+                                    <option value="electronics">Gadgets</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="productImage" class="form-label">Product Image</label>
+                            <input type="file" class="form-control" id="productImage" name="productImage" accept="image/*" required>
+                            <div class="form-text">Upload an image file. The image should be square or 4:3 ratio for best results.</div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                            <input type="number" class="form-control" id="stockQuantity" name="stockQuantity" min="0" value="0" required>
+                            <div class="form-text">Number of units available. Product will show as "Out of Stock" when this reaches 0.</div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/seller/dashboard" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Submit for Review</button>
+                        </div>
+                        <div class="form-text mt-2 text-muted">
+                            <i class="fas fa-info-circle"></i> Your product will be reviewed by admin before appearing on the storefront.
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

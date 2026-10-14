@@ -1,0 +1,39 @@
+<div class="card h-100 product-card">
+    {{#if product.inStock}}
+    <span class="badge bg-success position-absolute end-0 m-2">In Stock</span>
+    {{else}}
+    <span class="badge bg-danger position-absolute end-0 m-2">Out of Stock</span>
+    {{/if}}
+    <div class="position-relative">
+        <a href="/products/{{product._id}}" class="product-image-link">
+            <img src="{{product.imageUrl}}" class="card-img-top product-image" alt="{{product.name}}">
+        </a>
+        <div class="product-actions position-absolute bottom-0 end-0 m-2">
+            <a href="/products/{{product._id}}" class="btn btn-sm btn-light rounded-circle me-1">
+                <i class="fas fa-eye"></i>
+            </a>
+            <button class="btn btn-sm btn-light rounded-circle add-to-cart-btn me-1" data-product-id="{{product._id}}">
+                <i class="fas fa-cart-plus"></i>
+            </button>
+            <button class="btn btn-sm btn-light rounded-circle toggle-wishlist-btn {{#if (isInWishlist product._id ../user.wishlist)}}in-wishlist{{/if}}" data-product-id="{{product._id}}">
+                {{#if (isInWishlist product._id ../user.wishlist)}}
+                <i class="fas fa-heart text-danger"></i>
+                {{else}}
+                <i class="far fa-heart"></i>
+                {{/if}}
+            </button>
+        </div>
+    </div>
+    <div class="card-body p-3">
+        <h5 class="card-title">
+            <a href="/products/{{product._id}}" class="text-decoration-none text-dark">{{product.name}}</a>
+        </h5>
+        <p class="card-text text-truncate small text-secondary">{{product.description}}</p>
+        <div class="d-flex justify-content-between align-items-center mt-auto">
+            <span class="product-price">Rs. {{product.price}}</span>
+            <button class="btn btn-sm btn-danger add-to-cart-btn" data-product-id="{{product._id}}">
+                Add to Cart
+            </button>
+        </div>
+    </div>
+</div> 

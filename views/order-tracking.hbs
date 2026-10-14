@@ -1,0 +1,157 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Order Tracking</h3>
+                </div>
+                <div class="card-body">
+                    {{#unless orderFound}}
+                        {{#if error}}
+                        <div class="alert alert-danger mb-4">
+                            {{error}}
+                        </div>
+                        {{/if}}
+                        
+                        <p class="mb-4">Enter your order number and email to track your order status.</p>
+                        
+                        <form action="/order-tracking" method="POST">
+                            <div class="mb-3">
+                                <label for="orderNumber" class="form-label">Order Number</label>
+                                <input type="text" class="form-control" id="orderNumber" name="orderNumber" placeholder="e.g. ORD-1234567890-123" required>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="email" name="email" placeholder="Enter the email used for the order" required>
+                            </div>
+                            
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-search me-2"></i>Track My Order
+                            </button>
+                        </form>
+                    {{else}}
+                        <div class="text-center mb-4">
+                            <i class="fas fa-box-open fa-3x text-primary mb-3"></i>
+                            <h4>Order #{{order.orderNumber}}</h4>
+                            <p class="text-muted">Ordered on {{formatDate order.createdAt}}</p>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Order Status</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-center">
+                                    <div class="col-12">
+                                        <div class="progress-track">
+                                            <ul id="progressbar">
+                                                <li class="step0 {{#if (or (eq order.status 'pending') (eq order.status 'processing') (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step1">Ordered</li>
+                                                <li class="step0 {{#if (or (eq order.status 'processing') (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step2">Processing</li>
+                                                <li class="step0 {{#if (or (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step3">Shipped</li>
+                                                <li class="step0 {{#if (eq order.status 'delivered')}}active{{/if}}" id="step4">Delivered</li>
+                                            </ul>
+                                        </div>
+                                        
+                                        <div class="text-center mt-3">
+                                            <span class="badge {{#if (eq order.status 'pending')}}bg-warning text-dark{{else if (eq order.status 'processing')}}bg-info{{else if (eq order.status 'shipped')}}bg-primary{{else if (eq order.status 'delivered')}}bg-success{{else if (eq order.status 'cancelled')}}bg-danger{{/if}} p-2">
+                                                {{#if (eq order.status 'pending')}}
+                                                    Pending
+                                                {{else if (eq order.status 'processing')}}
+                                                    Processing
+                                                {{else if (eq order.status 'shipped')}}
+                                                    Shipped
+                                                {{else if (eq order.status 'delivered')}}
+                                                    Delivered
+                                                {{else if (eq order.status 'cancelled')}}
+                                                    Cancelled
+                                                {{/if}}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Order Summary</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-borderless">
+                                        <tbody>
+                                            <tr>
+                                                <td><strong>Subtotal:</strong></td>
+                                                <td class="text-end">{{formatPrice order.subtotal}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Tax:</strong></td>
+                                                <td class="text-end">{{formatPrice order.tax}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Shipping:</strong></td>
+                                                <td class="text-end">Free</td>
+                                            </tr>
+                                            <tr>
+                                                <td><strong>Total:</strong></td>
+                                                <td class="text-end"><strong>{{formatPrice order.total}}</strong></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card mb-4">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Shipping Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Name:</strong> {{order.shippingDetails.fullName}}</p>
+                                <p><strong>Email:</strong> {{order.shippingDetails.email}}</p>
+                                <p><strong>Address:</strong><br>
+                                    {{order.shippingDetails.address}}<br>
+                                    {{order.shippingDetails.city}}, {{order.shippingDetails.state}} {{order.shippingDetails.zipCode}}<br>
+                                    {{order.shippingDetails.country}}
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0">Order Items ({{order.items.length}})</h5>
+                            </div>
+                            <div class="card-body p-0">
+                                <ul class="list-group list-group-flush">
+                                    {{#each order.items}}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{this.imageUrl}}" class="img-thumbnail me-3" style="width: 50px; height: 50px; object-fit: cover;" alt="{{this.name}}">
+                                            <div>
+                                                <h6 class="mb-0">{{this.name}}</h6>
+                                                <small class="text-muted">Qty: {{this.quantity}}</small>
+                                            </div>
+                                        </div>
+                                        <span>Rs. {{formatPrice (multiply this.price this.quantity)}}</span>
+                                    </li>
+                                    {{/each}}
+                                </ul>
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="/" class="btn btn-outline-primary me-2">
+                                <i class="fas fa-home me-2"></i>Return to Home
+                            </a>
+                            <a href="/contact-us" class="btn btn-outline-secondary">
+                                <i class="fas fa-question-circle me-2"></i>Need Help?
+                            </a>
+                        </div>
+                    {{/unless}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

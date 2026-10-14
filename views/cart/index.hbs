@@ -1,0 +1,127 @@
+<div class="container my-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Your Shopping Cart</h1>
+        <a href="/products" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+        </a>
+    </div>
+    
+    {{#if cartItems.length}}
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Product</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Quantity</th>
+                                    <th scope="col">Subtotal</th>
+                                    <th scope="col"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each cartItems}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{this.product.imageUrl}}" class="img-thumbnail me-3" style="width: 80px; height: 80px; object-fit: cover;" alt="{{this.product.name}}">
+                                            <div>
+                                                <h6 class="mb-0">{{this.product.name}}</h6>
+                                                <small class="text-muted">
+                                                    {{#if (eq this.product.category 'men-clothing')}}
+                                                        Men's Clothing
+                                                    {{else if (eq this.product.category 'women-clothing')}}
+                                                        Women's Clothing
+                                                    {{else if (eq this.product.category 'accessories')}}
+                                                        Accessories
+                                                    {{else if (eq this.product.category 'electronics')}}
+                                                        Gadgets
+                                                    {{/if}}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Rs. {{this.product.price}}</td>
+                                    <td>
+                                        <div class="input-group input-group-sm" style="width: 100px;">
+                                            <button class="btn btn-outline-secondary quantity-btn" type="button" data-action="decrease" data-product-id="{{this.product._id}}">
+                                                <i class="fas fa-minus"></i>
+                                            </button>
+                                            <input type="text" class="form-control text-center quantity-input" value="{{this.quantity}}" readonly>
+                                            <button class="btn btn-outline-secondary quantity-btn" type="button" data-action="increase" data-product-id="{{this.product._id}}">
+                                                <i class="fas fa-plus"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                    <td class="item-subtotal">Rs. {{multiply this.product.price this.quantity}}</td>
+                                    <td>
+                                        <button class="btn btn-sm btn-outline-danger remove-item-btn" data-product-id="{{this.product._id}}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-end">
+                <button id="clear-cart" class="btn btn-outline-danger">
+                    <i class="fas fa-trash me-2"></i>Clear Cart
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Subtotal:</span>
+                        <span id="cart-subtotal">{{cartTotal}}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Shipping:</span>
+                        <span>Free</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span>Tax (10%):</span>
+                        <span id="cart-tax">{{multiply cartTotal 0.1}}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between mb-3">
+                        <strong>Total:</strong>
+                        <strong id="cart-total">{{multiply cartTotal 1.1}}</strong>
+                    </div>
+                    <button class="btn btn-danger w-100" id="checkout-btn">
+                        <i class="fas fa-lock me-2"></i>Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="card text-center p-5">
+        <div class="card-body">
+            <i class="fas fa-shopping-cart fa-4x mb-3 text-muted"></i>
+            <h3>Your cart is empty</h3>
+            <p class="mb-4">Looks like you haven't added any products to your cart yet.</p>
+            <a href="/products" class="btn btn-primary">Start Shopping</a>
+        </div>
+    </div>
+    {{/if}}
+</div>
+
+<script>
+    // Helper function for handlebars
+    Handlebars.registerHelper('multiply', function(a, b) {
+        return (a * b).toFixed(2);
+    });
+</script> 

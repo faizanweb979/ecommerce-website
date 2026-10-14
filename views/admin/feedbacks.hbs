@@ -1,0 +1,233 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/admin/feedbacks" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-comments me-2"></i> Manage Feedbacks
+                        {{#if pendingCount}}
+                        <span class="badge bg-danger ms-1">{{pendingCount}}</span>
+                        {{/if}}
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Manage Reviews</h2>
+                {{#if pendingCount}}
+                <span class="badge bg-warning text-dark fs-6">
+                    <i class="fas fa-clock me-1"></i>{{pendingCount}} Pending
+                </span>
+                {{/if}}
+            </div>
+
+            {{#if successMessage}}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{successMessage}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+            {{#if errorMessage}}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{errorMessage}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+
+            <!-- Filter Tabs -->
+            <ul class="nav nav-tabs mb-4">
+                <li class="nav-item">
+                    <a class="nav-link {{#if (eq currentFilter 'all')}}active{{/if}}" href="/admin/feedbacks">All</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{#if (eq currentFilter 'pending')}}active{{/if}}" href="/admin/feedbacks?filter=pending">
+                        Pending
+                        {{#if pendingCount}}<span class="badge bg-danger ms-1">{{pendingCount}}</span>{{/if}}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{#if (eq currentFilter 'approved')}}active{{/if}}" href="/admin/feedbacks?filter=approved">Approved</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {{#if (eq currentFilter 'rejected')}}active{{/if}}" href="/admin/feedbacks?filter=rejected">Rejected</a>
+                </li>
+            </ul>
+
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Customer Reviews</h5>
+                </div>
+                <div class="card-body">
+                    {{#if feedbacks.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Customer</th>
+                                    <th>Product</th>
+                                    <th>Rating</th>
+                                    <th>Comment</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each feedbacks}}
+                                <tr>
+                                    <td>
+                                        <strong>{{user.name}}</strong><br>
+                                        <small class="text-muted">{{user.email}}</small>
+                                    </td>
+                                    <td><strong>{{product.name}}</strong></td>
+                                    <td>{{{stars rating}}}</td>
+                                    <td style="max-width:220px;">
+                                        {{comment}}
+                                        {{#if rejectionReason}}
+                                        <br><small class="text-danger"><i class="fas fa-info-circle"></i> {{rejectionReason}}</small>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{#if (eq status 'approved')}}
+                                        <span class="badge bg-success">Approved</span>
+                                        {{else if (eq status 'rejected')}}
+                                        <span class="badge bg-danger">Rejected</span>
+                                        {{else}}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {{/if}}
+                                    </td>
+                                    <td>{{formatDate createdAt}}</td>
+                                    <td>
+                                        <div class="d-flex gap-1 flex-wrap">
+                                            {{#unless (eq status 'approved')}}
+                                            <form action="/admin/feedbacks/{{_id}}/approve" method="POST" style="display:inline">
+                                                <button type="submit" class="btn btn-sm btn-success" title="Approve">
+                                                    <i class="fas fa-check"></i>
+                                                </button>
+                                            </form>
+                                            {{/unless}}
+
+                                            {{#unless (eq status 'rejected')}}
+                                            <button type="button" class="btn btn-sm btn-warning" title="Reject"
+                                                data-bs-toggle="modal" data-bs-target="#rejectModal{{_id}}">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                            {{/unless}}
+
+                                            <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{_id}}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Reject Modal -->
+                                        <div class="modal fade" id="rejectModal{{_id}}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Reject Review</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <form action="/admin/feedbacks/{{_id}}/reject" method="POST">
+                                                        <div class="modal-body">
+                                                            <p>Rejecting review by <strong>{{user.name}}</strong> on <strong>{{product.name}}</strong>.</p>
+                                                            <div class="mb-3">
+                                                                <label class="form-label">Reason (optional)</label>
+                                                                <textarea class="form-control" name="rejectionReason" rows="3"
+                                                                    placeholder="e.g. Inappropriate content, spam..."></textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                            <button type="submit" class="btn btn-danger">Reject Review</button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{_id}}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to permanently delete this review?</p>
+                                                        <div class="bg-light p-3 rounded">
+                                                            <strong>Customer:</strong> {{user.name}}<br>
+                                                            <strong>Product:</strong> {{product.name}}<br>
+                                                            <strong>Comment:</strong> "{{comment}}"
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <button type="button" class="btn btn-danger"
+                                                            onclick="deleteFeedback('{{_id}}')">Delete</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div class="text-center py-5">
+                        <i class="fas fa-comments fa-4x text-muted mb-3"></i>
+                        <h4>No Reviews Found</h4>
+                        <p class="text-muted">No reviews match the selected filter.</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function deleteFeedback(feedbackId) {
+    fetch(`/admin/feedbacks/${feedbackId}`, {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (data.success) location.reload();
+        else alert('Error: ' + data.message);
+    })
+    .catch(() => alert('An error occurred while deleting the review'));
+}
+</script>

@@ -1,0 +1,324 @@
+<div class="container mt-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="/">Home</a></li>
+            <li class="breadcrumb-item"><a href="/products">Products</a></li>
+            <li class="breadcrumb-item"><a href="/products?category={{product.category}}">
+                {{#if (eq product.category 'men-clothing')}}
+                    Men's Clothing
+                {{else if (eq product.category 'women-clothing')}}
+                    Women's Clothing
+                {{else if (eq product.category 'accessories')}}
+                    Accessories
+                {{else if (eq product.category 'electronics')}}
+                    Gadgets
+                {{/if}}
+            </a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{product.name}}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6 mb-4">
+            <div class="card p-3">
+                <img src="{{product.imageUrl}}" class="img-fluid rounded" alt="{{product.name}}">
+            </div>
+        </div>
+        
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <div class="mb-2">
+                <span class="badge bg-primary">{{product.category}}</span>
+                {{#if product.inStock}}
+                <span class="badge bg-success">In Stock</span>
+                {{else}}
+                <span class="badge bg-danger">Out of Stock</span>
+                {{/if}}
+            </div>
+            <h1 class="h2 mb-2">{{product.name}}</h1>
+            <div class="mb-3">
+                <span class="h3 text-primary">Rs. {{product.price}}</span>
+            </div>
+            {{#if product.seller}}
+            <div class="mb-3">
+                <small class="text-muted">Sold by: {{product.seller.name}}</small>
+            </div>
+            {{/if}}
+            <div class="mb-4">
+                <p>{{product.description}}</p>
+            </div>
+            
+            <div class="d-flex align-items-center mb-4">
+                <div class="input-group me-3" style="width: 130px;">
+                    <button class="btn btn-outline-secondary" type="button" id="decreaseQty">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <input type="number" class="form-control text-center" id="quantity" value="1" min="1" max="10">
+                    <button class="btn btn-outline-secondary" type="button" id="increaseQty">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                {{#if product.inStock}}
+                <button class="btn btn-primary btn-lg add-to-cart-detail me-2" data-product-id="{{product._id}}">
+                    <i class="fas fa-cart-plus me-2"></i>Add to Cart
+                </button>
+                {{else}}
+                <button class="btn btn-secondary btn-lg me-2" disabled>
+                    <i class="fas fa-cart-plus me-2"></i>Out of Stock
+                </button>
+                {{/if}}
+                
+                <button class="btn btn-outline-danger btn-lg toggle-wishlist-btn {{#if isInWishlist}}in-wishlist{{/if}}" data-product-id="{{product._id}}">
+                    {{#if isInWishlist}}
+                    <i class="fas fa-heart"></i>
+                    {{else}}
+                    <i class="far fa-heart"></i>
+                    {{/if}}
+                </button>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-truck text-primary me-2"></i>Shipping Information</h5>
+                    <p class="mb-0">Free shipping on orders over PKR 500. Standard delivery 3-5 business days.</p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5><i class="fas fa-undo text-primary me-2"></i>Return Policy</h5>
+                    <p class="mb-0">Easy returns within 30 days of purchase. See our <a href="#">return policy</a> for details.</p>
+                </div>
+            </div>
+
+            {{#if product.seller}}
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-envelope me-2"></i>Contact Seller</h5>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-3">
+                        <i class="fas fa-store me-1"></i> Sold by <strong>{{product.seller.name}}</strong>
+                    </p>
+                    {{#if user}}
+                        {{#if (eq user.id product.seller._id)}}
+                        <div class="alert alert-info mb-0">
+                            <i class="fas fa-info-circle me-1"></i> This is your product.
+                        </div>
+                        {{else}}
+                        <form action="/messages/send" method="POST">
+                            <input type="hidden" name="productId" value="{{product._id}}">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="message" rows="3"
+                                    placeholder="Ask the seller about this product..."
+                                    required maxlength="1000"></textarea>
+                                <div class="form-text">Max 1000 characters</div>
+                            </div>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fas fa-paper-plane me-2"></i>Send Message
+                            </button>
+                        </form>
+                        {{/if}}
+                    {{else}}
+                    <div class="alert alert-info mb-0">
+                        <i class="fas fa-info-circle me-1"></i>
+                        <a href="/users/login" class="alert-link">Login</a> to contact the seller.
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+    
+    <!-- Customer Feedback Section -->
+    <div class="my-5">
+        <div class="row">
+            <div class="col-12">
+                <h3 class="mb-4">
+                    <i class="fas fa-comments text-primary me-2"></i>Customer Feedback
+                </h3>
+                
+                <!-- Feedback Form -->
+                {{#if user}}
+                    {{#if hasPurchased}}
+                        {{#if alreadyReviewed}}
+                        <div class="alert alert-success mb-4">
+                            <i class="fas fa-check-circle me-2"></i>
+                            You have already reviewed this product. Thank you for your feedback!
+                        </div>
+                        {{else}}
+                        <div class="card mb-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-edit me-2"></i>Leave Your Review
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="/feedback/add" method="POST">
+                                    <input type="hidden" name="productId" value="{{product._id}}">
+                                    <!-- Star Rating -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Your Rating <span class="text-danger">*</span></label>
+                                        <div class="star-rating d-flex gap-2 fs-4" id="starRating">
+                                            <i class="far fa-star text-warning star-icon" data-value="1" style="cursor:pointer"></i>
+                                            <i class="far fa-star text-warning star-icon" data-value="2" style="cursor:pointer"></i>
+                                            <i class="far fa-star text-warning star-icon" data-value="3" style="cursor:pointer"></i>
+                                            <i class="far fa-star text-warning star-icon" data-value="4" style="cursor:pointer"></i>
+                                            <i class="far fa-star text-warning star-icon" data-value="5" style="cursor:pointer"></i>
+                                        </div>
+                                        <input type="hidden" name="rating" id="ratingInput" value="">
+                                        <div class="form-text">Click a star to rate this product</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="comment" class="form-label">Your Comment</label>
+                                        <textarea class="form-control" id="comment" name="comment" rows="4"
+                                                  placeholder="Share your thoughts about this product..."
+                                                  required maxlength="1000"></textarea>
+                                        <div class="form-text">Maximum 1000 characters</div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-paper-plane me-2"></i>Submit Review
+                                    </button>
+                                    <small class="text-muted ms-3">
+                                        <i class="fas fa-info-circle"></i> Your review will be visible after admin approval.
+                                    </small>
+                                </form>
+                            </div>
+                        </div>
+                        {{/if}}
+                    {{else}}
+                    <div class="alert alert-info mb-4">
+                        <i class="fas fa-shopping-bag me-2"></i>
+                        Only customers who have purchased this product can leave a review.
+                    </div>
+                    {{/if}}
+                {{else}}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Please <a href="/users/login" class="alert-link">login</a> to leave a review.</strong>
+                    </div>
+                {{/if}}
+                
+                <!-- Display Existing Feedback -->
+                {{#if feedbacks.length}}
+                    <!-- Average Rating Summary -->
+                    <div class="card mb-3">
+                        <div class="card-body d-flex align-items-center gap-3">
+                            <div class="text-center">
+                                <div class="display-4 fw-bold text-warning">{{avgRating}}</div>
+                                <div>{{{stars avgRating}}}</div>
+                                <small class="text-muted">{{reviewCount}} review(s)</small>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-comments me-2"></i>Customer Reviews ({{feedbacks.length}})
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {{#each feedbacks}}
+                                <div class="border-bottom pb-3 mb-3 {{#unless @last}}{{else}}border-bottom-0 pb-0 mb-0{{/unless}}">
+                                    <div class="d-flex justify-content-between align-items-start mb-2">
+                                        <div>
+                                            <h6 class="mb-1">
+                                                <i class="fas fa-user-circle text-primary me-1"></i>
+                                                {{user.name}}
+                                            </h6>
+                                            <div class="mb-1">{{{stars rating}}}</div>
+                                            <small class="text-muted">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                {{formatDate createdAt}}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <div class="feedback-comment bg-light p-3 rounded">
+                                        <p class="mb-0">{{comment}}</p>
+                                    </div>
+                                </div>
+                            {{/each}}
+                        </div>
+                    </div>
+                {{else}}
+                    <div class="card">
+                        <div class="card-body text-center py-4">
+                            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+                            <h5 class="text-muted">No feedback yet</h5>
+                            <p class="text-muted">Be the first to share your thoughts about this product!</p>
+                        </div>
+                    </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Related Products -->
+    <div class="my-5">
+        <h3 class="mb-4">You May Also Like</h3>
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+            {{#each relatedProducts}}
+            <div class="col">
+                {{> product-card product=this}}
+            </div>
+            {{else}}
+            <div class="col-12">
+                <div class="alert alert-info">No related products available.</div>
+            </div>
+            {{/each}}
+        </div>
+    </div>
+</div>
+
+<script>
+// Interactive star rating
+const stars = document.querySelectorAll('.star-icon');
+const ratingInput = document.getElementById('ratingInput');
+
+if (stars.length) {
+    stars.forEach(star => {
+        star.addEventListener('mouseover', function() {
+            const val = parseInt(this.dataset.value);
+            stars.forEach((s, i) => {
+                s.className = i < val
+                    ? 'fas fa-star text-warning star-icon'
+                    : 'far fa-star text-warning star-icon';
+                s.style.cursor = 'pointer';
+            });
+        });
+
+        star.addEventListener('mouseout', function() {
+            const selected = ratingInput ? parseInt(ratingInput.value) : 0;
+            stars.forEach((s, i) => {
+                s.className = i < selected
+                    ? 'fas fa-star text-warning star-icon'
+                    : 'far fa-star text-warning star-icon';
+            });
+        });
+
+        star.addEventListener('click', function() {
+            const val = parseInt(this.dataset.value);
+            ratingInput.value = val;
+            stars.forEach((s, i) => {
+                s.className = i < val
+                    ? 'fas fa-star text-warning star-icon'
+                    : 'far fa-star text-warning star-icon';
+            });
+        });
+    });
+
+    // Validate rating on submit
+    const feedbackForm = document.querySelector('form[action="/feedback/add"]');
+    if (feedbackForm) {
+        feedbackForm.addEventListener('submit', function(e) {
+            if (!ratingInput.value) {
+                e.preventDefault();
+                alert('Please select a star rating before submitting.');
+            }
+        });
+    }
+}
+</script>

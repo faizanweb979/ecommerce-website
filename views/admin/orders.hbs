@@ -1,0 +1,148 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Manage Orders</h2>
+            </div>
+            
+            {{#if successMessage}}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{successMessage}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{/if}}
+            
+            {{#if errorMessage}}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{errorMessage}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{/if}}
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Orders List</h5>
+                </div>
+                <div class="card-body">
+                    {{#if orders.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Total</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each orders}}
+                                <tr>
+                                    <td>{{this.orderNumber}}</td>
+                                    <td>
+                                        {{#if this.user}}
+                                            {{this.user.name}}
+                                        {{else}}
+                                            Unknown User
+                                        {{/if}}
+                                    </td>
+                                    <td>{{formatDate this.createdAt}}</td>
+                                    <td>Rs. {{formatPrice this.total}}</td>
+                                    <td>
+                                        {{#if (eq this.paymentMethod 'jazzcash')}}
+                                            {{#if this.paymentDetails.paymentStatus}}
+                                                <span class="badge {{#if (eq this.paymentDetails.paymentStatus 'pending')}}bg-warning text-dark{{else if (eq this.paymentDetails.paymentStatus 'approved')}}bg-success{{else if (eq this.paymentDetails.paymentStatus 'rejected')}}bg-danger{{/if}}">
+                                                    <i class="fas fa-mobile-alt me-1"></i>
+                                                    {{#if (eq this.paymentDetails.paymentStatus 'pending')}}Pending Review
+                                                    {{else if (eq this.paymentDetails.paymentStatus 'approved')}}Approved
+                                                    {{else if (eq this.paymentDetails.paymentStatus 'rejected')}}Rejected
+                                                    {{/if}}
+                                                </span>
+                                            {{else}}
+                                                <span class="badge bg-secondary">
+                                                    <i class="fas fa-mobile-alt me-1"></i>JazzCash
+                                                </span>
+                                            {{/if}}
+                                        {{else if (eq this.paymentMethod 'bank_transfer')}}
+                                            <span class="badge bg-info">
+                                                <i class="fas fa-university me-1"></i>Bank Transfer
+                                            </span>
+                                        {{else if (eq this.paymentMethod 'cash_on_delivery')}}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-money-bill-wave me-1"></i>COD
+                                            </span>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        <span class="badge {{#if (eq this.status 'pending')}}bg-warning text-dark{{else if (eq this.status 'processing')}}bg-info{{else if (eq this.status 'shipped')}}bg-primary{{else if (eq this.status 'delivered')}}bg-success{{else if (eq this.status 'cancelled')}}bg-danger{{/if}}">
+                                            {{#if (eq this.status 'pending')}}
+                                                Pending
+                                            {{else if (eq this.status 'processing')}}
+                                                Processing
+                                            {{else if (eq this.status 'shipped')}}
+                                                Shipped
+                                            {{else if (eq this.status 'delivered')}}
+                                                Delivered
+                                            {{else if (eq this.status 'cancelled')}}
+                                                Cancelled
+                                            {{/if}}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a href="/admin/orders/{{this._id}}" class="btn btn-sm btn-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-cart fa-4x text-muted mb-3"></i>
+                        <h4>No Orders Found</h4>
+                        <p class="text-muted">There are no orders in the system yet.</p>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,99 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Edit Blog Post</h3>
+                </div>
+                <div class="card-body p-4">
+                    {{#if formError}}
+                    <div class="alert alert-danger">
+                        {{formError}}
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/blogs/admin/edit/{{blog._id}}" method="POST" id="blogForm">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Title</label>
+                            <input type="text" class="form-control" id="title" name="title" value="{{blog.title}}" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="summary" class="form-label">Summary</label>
+                            <textarea class="form-control" id="summary" name="summary" rows="2" required>{{blog.summary}}</textarea>
+                            <div class="form-text">A brief summary of the blog post (displayed in listings).</div>
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category" required>
+                                    <option value="" disabled>Select a category</option>
+                                    <option value="fashion" {{#if (eq blog.category 'fashion')}}selected{{/if}}>Fashion</option>
+                                    <option value="technology" {{#if (eq blog.category 'technology')}}selected{{/if}}>Technology</option>
+                                    <option value="lifestyle" {{#if (eq blog.category 'lifestyle')}}selected{{/if}}>Lifestyle</option>
+                                    <option value="business" {{#if (eq blog.category 'business')}}selected{{/if}}>Business</option>
+                                </select>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <label for="tags" class="form-label">Tags</label>
+                                <input type="text" class="form-control" id="tags" name="tags" value="{{join blog.tags ', '}}">
+                                <div class="form-text">Separate tags with commas (e.g. summer, sale, tips).</div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="imageUrl" class="form-label">Featured Image URL</label>
+                            <input type="url" class="form-control" id="imageUrl" name="imageUrl" value="{{blog.imageUrl}}" required>
+                            <div class="form-text">Enter a valid URL for the blog post featured image.</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="content" class="form-label">Content</label>
+                            <textarea class="form-control" id="content" name="content" rows="15" required>{{blog.content}}</textarea>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isPublished" name="isPublished" {{#if blog.isPublished}}checked{{/if}}>
+                                <label class="form-check-label" for="isPublished">
+                                    Publish this blog post
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="/admin/blogs" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-success">Update Blog Post</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Basic client-side validation
+    document.getElementById('blogForm').addEventListener('submit', function(e) {
+        const title = document.getElementById('title').value;
+        const content = document.getElementById('content').value;
+        const summary = document.getElementById('summary').value;
+        
+        if (title.length < 5) {
+            e.preventDefault();
+            alert('Title must be at least 5 characters long');
+        }
+        
+        if (summary.length < 10) {
+            e.preventDefault();
+            alert('Summary must be at least 10 characters long');
+        }
+        
+        if (content.length < 50) {
+            e.preventDefault();
+            alert('Content must be at least 50 characters long');
+        }
+    });
+</script>

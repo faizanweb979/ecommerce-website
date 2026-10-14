@@ -1,0 +1,185 @@
+<!-- Top Bar -->
+<div class="bg-light py-2">
+    <div class="container d-flex justify-content-between align-items-center">
+        <div class="d-flex gap-3">
+            <a href="/products?featured=true" class="text-decoration-none text-secondary small">Featured Products</a>
+        <!--    <a href="/wishlist" class="text-decoration-none text-secondary small">Wishlist</a> -->
+            <a href="/blogs" class="text-decoration-none text-secondary small">Blog</a>    
+            {{#if user}}
+                {{#if (eq user.role 'admin')}}
+                <a href="/admin/dashboard" class="text-decoration-none text-secondary small">Admin Dashboard</a>
+                {{/if}}
+                {{#if (eq user.role 'seller')}}
+                <a href="/seller/dashboard" class="text-decoration-none text-secondary small">Seller Dashboard</a>
+                {{/if}}
+            {{/if}}
+        </div>
+        <div class="d-flex gap-3">
+            {{#if user}}
+                <a href="/users/profile" class="text-decoration-none text-secondary small">Hello, {{user.name}}</a>
+                <a href="/users/logout" class="text-decoration-none text-secondary small">Logout</a>
+            {{else}}
+                <a href="/users/login" class="text-decoration-none text-secondary small">Login</a>
+                <a href="/users/signup" class="text-decoration-none text-secondary small">Signup</a>
+            {{/if}}
+            {{#unless (or (eq user.role 'admin') (eq user.role 'seller'))}}
+            <a href="/my-orders" class="text-decoration-none text-secondary small">My Orders</a>
+            <a href="/order-tracking" class="text-decoration-none text-secondary small">Order Tracking</a>
+            {{/unless}}
+        </div>
+    </div>
+</div>
+
+<!-- Email Verification Warning — only on checkout page, handled there -->
+{{#if showEmailWarning}}
+<div class="alert alert-warning alert-dismissible fade show mb-0 rounded-0 text-center py-2" role="alert" style="font-size:0.9rem;">
+    <i class="fas fa-exclamation-triangle me-2"></i>
+    Your email is not verified. Please check your inbox and verify your email to place orders.
+    <button type="button" class="btn-close btn-sm" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{{/if}}
+
+<!-- Main Header -->
+<header class="bg-white py-3">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-center">
+            <!-- Logo -->
+            <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+                <span class="bg-primary rounded-circle d-inline-block me-2" style="width: 30px; height: 30px;"></span>
+                <span class="fw-bold fs-4">TrendoTech</span>
+            </a>
+            
+            <!-- Mobile Toggle Button -->
+            <button class="navbar-toggler d-lg-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <!-- Desktop Navigation -->
+            <nav class="navbar navbar-expand-lg d-none d-lg-block">
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/products">Categories</a>
+                            </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/contact-us">Contact Us</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link fw-medium" href="/about-us">About Us</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+            
+            <!-- Desktop Icons -->
+            <div class="d-none d-lg-flex align-items-center gap-3">
+                {{#unless (or (eq user.role 'admin') (eq user.role 'seller'))}}
+                <!-- Search Icon -->
+                <button class="btn btn-search-icon" id="searchToggle">
+                    <i class="fas fa-search fs-5"></i>
+                </button>
+                
+                <!-- Wishlist Icon -->
+                <a href="/wishlist" class="position-relative me-2">
+                    <i class="fas fa-heart fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark wishlist-count">
+                        {{wishlistCount}}
+                    </span>
+                </a>
+                <a href="/cart" class="position-relative">
+                    <i class="fas fa-shopping-cart fs-5"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark cart-count">
+                        {{cartCount}}
+                    </span>
+                </a>
+                <div class="ms-3 fw-medium">
+                    Total <br>Rs{{#if cartTotal}}{{cartTotal}}{{else}}0.00{{/if}}
+                </div>
+                {{/unless}}
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <div class="d-lg-none mt-3 pt-3 border-top">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/">Home</a>
+                    </li>
+                     <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/products?category=women-clothing">Women</a>
+                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/products?category=men-clothing">Men</a>
+                        </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/products?category=accessories">Accessories</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/products?category=shoes">Shoes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/products?category=watches">Watches</a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link fw-medium" href="/products?category=electronics">
+                            Gadgets
+                            <span class="badge bg-danger position-absolute" style="top: 0; right: -15px; font-size: 8px; padding: 3px 5px;">NEW</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/contact-us">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/about-us">About Us</a>
+                    </li>
+                </ul>
+                
+                <!-- Mobile Icons -->
+                {{#unless (or (eq user.role 'admin') (eq user.role 'seller'))}}
+                <div class="d-flex align-items-center gap-3 mt-3 pt-3 border-top">
+                    <!-- Search Icon -->
+                    <button class="btn btn-search-icon" id="searchToggle">
+                        <i class="fas fa-search fs-5"></i>
+                    </button>
+                    
+                    <!-- Wishlist Icon -->
+                    <a href="/wishlist" class="position-relative me-2">
+                        <i class="fas fa-heart fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark wishlist-count">
+                            {{wishlistCount}}
+                        </span>
+                    </a>
+                    <a href="/cart" class="position-relative">
+                        <i class="fas fa-shopping-cart fs-5"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-dark cart-count">
+                            {{cartCount}}
+                        </span>
+                    </a>
+                    <div class="ms-3 fw-medium">
+                        Total <br>Rs{{#if cartTotal}}{{cartTotal}}{{else}}0.00{{/if}}
+                    </div>
+                </div>
+                {{/unless}}
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="searchOverlay">
+    <div class="search-container">
+        <form action="/products" method="GET" class="search-form">
+            <input type="text" name="search" class="search-input" placeholder="Search For Products..." aria-label="Search" id="searchInput">
+            <button type="submit" class="search-submit">
+                <i class="fas fa-search"></i>
+            </button>
+            <button type="button" class="search-close" id="searchClose">
+                <i class="fas fa-times"></i>
+            </button>
+        </form>
+    </div>
+</div> 

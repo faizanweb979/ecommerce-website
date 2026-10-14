@@ -1,0 +1,31 @@
+<div class="container my-5">
+    <h2 class="text-center mb-4">Contact Us</h2>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <form action="/contact-us" method="POST" class="card p-4 shadow-sm">
+                <div class="mb-3">
+                    <label for="name" class="form-label">Your Name</label>
+                    <input type="text" class="form-control" name="name" id="name" placeholder="John Doe" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Your Email</label>
+                    <input type="email" class="form-control" name="email" id="email" placeholder="email@example.com" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" name="subject" id="subject" placeholder="Enter subject" required>
+                </div>
+
+                <div class="mb-3">
+                    <label for="message" class="form-label">Your Message</label>
+                    <textarea class="form-control" name="message" id="message" rows="5" placeholder="Write your message here..." required></textarea>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Send Message</button>
+            </form>
+        </div>
+    </div>
+</div>

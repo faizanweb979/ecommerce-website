@@ -1,0 +1,134 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Main Content -->
+        <div class="col-lg-8">
+            <h1 class="mb-4">Blog Posts</h1>
+            
+            {{#if searchQuery}}
+            <div class="alert alert-info mb-4">
+                Showing search results for: <strong>{{searchQuery}}</strong>
+                <a href="/blogs" class="float-end">Clear search</a>
+            </div>
+            {{/if}}
+            
+            {{#if successMessage}}
+            <div class="alert alert-success mb-4">
+                {{successMessage}}
+            </div>
+            {{/if}}
+
+            {{#if blogs.length}}
+                {{#each blogs}}
+                <div class="card mb-4">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                            <img src="{{this.imageUrl}}" class="img-fluid rounded-start h-100" alt="{{this.title}}" style="object-fit: cover;">
+                        </div>
+                        <div class="col-md-8">
+                            <div class="card-body d-flex flex-column h-100">
+                                <div>
+                                    <h2 class="card-title h4">
+                                        <a href="/blogs/{{this._id}}" class="text-decoration-none text-dark">{{this.title}}</a>
+                                    </h2>
+                                    <p class="card-text">{{this.summary}}</p>
+                                </div>
+                                <div class="mt-auto">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">
+                                            By {{#if this.author}}{{this.author.name}}{{else}}Unknown Author{{/if}} | {{formatDate this.createdAt}}
+                                        </small>
+                                        <div>
+                                            <i class="fas fa-eye me-1"></i> {{this.views}}
+                                        </div>
+                                    </div>
+                                    <a href="/blogs/{{this._id}}" class="btn btn-outline-primary mt-2">Read More</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {{/each}}
+            {{else}}
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> No blog posts found.
+                </div>
+            {{/if}}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <!-- Search -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Search</h5>
+                </div>
+                <div class="card-body">
+                    <form action="/blogs" method="GET">
+                        <div class="input-group">
+                            <input type="text" class="form-control" name="search" placeholder="Search blogs..." value="{{searchQuery}}">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center {{#if (eq currentCategory 'all')}}active{{/if}}">
+                            <a href="/blogs" class="text-decoration-none {{#if (eq currentCategory 'all')}}text-white{{else}}text-dark{{/if}}">All Categories</a>
+                        </li>
+                        {{#each categories}}
+                        <li class="list-group-item d-flex justify-content-between align-items-center {{#if (eq ../currentCategory this)}}active{{/if}}">
+                            <a href="/blogs?category={{this}}" class="text-decoration-none {{#if (eq ../currentCategory this)}}text-white{{else}}text-dark{{/if}}">
+                                {{this}}
+                            </a>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Recent Posts -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Recent Posts</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        {{#each recentPosts}}
+                        <li class="list-group-item p-2">
+                            <a href="/blogs/{{this._id}}" class="text-decoration-none">
+                                <div class="d-flex justify-content-between">
+                                    <div>{{this.title}}</div>
+                                    <small class="text-muted">{{formatDate this.createdAt}}</small>
+                                </div>
+                            </a>
+                        </li>
+                        {{/each}}
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Admin Actions -->
+            {{#if (eq user.role 'admin')}}
+            <div class="card mb-4">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Admin Actions</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/blogs/admin/add" class="btn btn-success w-100">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Blog Post
+                    </a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div> 

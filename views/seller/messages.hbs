@@ -1,0 +1,156 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Seller Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/seller/products/add" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                    <a href="/seller/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/seller/messages" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-envelope me-2"></i> Messages
+                        {{#if unreadCount}}
+                        <span class="badge bg-danger ms-1">{{unreadCount}}</span>
+                        {{/if}}
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Customer Messages</h2>
+                {{#if unreadCount}}
+                <span class="badge bg-warning text-dark fs-6">
+                    <i class="fas fa-envelope me-1"></i>{{unreadCount}} Unread
+                </span>
+                {{/if}}
+            </div>
+
+            {{#if successMessage}}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{successMessage}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+            {{#if errorMessage}}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{errorMessage}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+
+            {{#if messages.length}}
+                {{#each messages}}
+                <div class="card mb-4 {{#unless isRead}}border-warning{{/unless}}">
+                    <!-- Message Header -->
+                    <div class="card-header d-flex justify-content-between align-items-center
+                        {{#unless isRead}}bg-warning bg-opacity-10{{else}}bg-light{{/unless}}">
+                        <div>
+                            <i class="fas fa-user-circle text-success me-2"></i>
+                            <strong>{{sender.name}}</strong>
+                            <small class="text-muted ms-2">{{sender.email}}</small>
+                            {{#unless isRead}}
+                            <span class="badge bg-warning text-dark ms-2">New</span>
+                            {{/unless}}
+                        </div>
+                        <small class="text-muted">{{formatDateTime createdAt}}</small>
+                    </div>
+
+                    <div class="card-body">
+                        <!-- Product reference -->
+                        <p class="mb-2">
+                            <small class="text-muted">
+                                <i class="fas fa-box me-1"></i>About:
+                                <a href="/products/{{product._id}}" class="text-decoration-none fw-semibold">
+                                    {{product.name}}
+                                </a>
+                            </small>
+                        </p>
+
+                        <!-- Customer message bubble -->
+                        <div class="d-flex mb-3">
+                            <div class="bg-light border rounded p-3 flex-grow-1">
+                                <small class="text-muted d-block mb-1">
+                                    <i class="fas fa-user me-1"></i>{{sender.name}}
+                                </small>
+                                {{message}}
+                            </div>
+                        </div>
+
+                        <!-- Existing replies thread -->
+                        {{#if replies.length}}
+                        <div class="ms-4 mb-3">
+                            {{#each replies}}
+                            <div class="d-flex mb-2">
+                                <div class="bg-success bg-opacity-10 border border-success rounded p-3 flex-grow-1">
+                                    <small class="text-success d-block mb-1 fw-semibold">
+                                        <i class="fas fa-store me-1"></i>You (Seller)
+                                        <span class="text-muted fw-normal ms-2">{{formatDateTime createdAt}}</span>
+                                    </small>
+                                    {{message}}
+                                </div>
+                            </div>
+                            {{/each}}
+                        </div>
+                        {{/if}}
+
+                        <!-- Reply form -->
+                        <div class="mt-3">
+                            <form action="/seller/messages/{{_id}}/reply" method="POST">
+                                <div class="input-group">
+                                    <textarea class="form-control" name="reply" rows="2"
+                                        placeholder="Type your reply to {{sender.name}}..."
+                                        required maxlength="1000"></textarea>
+                                    <button type="submit" class="btn btn-success px-4">
+                                        <i class="fas fa-paper-plane me-1"></i> Send Reply
+                                    </button>
+                                </div>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle me-1"></i>
+                                    Customer will receive your reply via email at {{sender.email}}
+                                </small>
+                            </form>
+                        </div>
+
+                        <!-- Mark as read (if unread and no reply yet) -->
+                        {{#unless isRead}}
+                        {{#unless replies.length}}
+                        <div class="mt-2">
+                            <form action="/seller/messages/{{_id}}/read" method="POST" style="display:inline">
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-check me-1"></i>Mark as Read
+                                </button>
+                            </form>
+                        </div>
+                        {{/unless}}
+                        {{/unless}}
+                    </div>
+                </div>
+                {{/each}}
+            {{else}}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-envelope-open fa-3x text-muted mb-3"></i>
+                    <h5>No messages yet</h5>
+                    <p class="text-muted">Customer inquiries about your products will appear here.</p>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+    </div>
+</div>

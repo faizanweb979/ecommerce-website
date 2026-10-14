@@ -1,0 +1,130 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Manage Users</h2>
+                <a href="/admin/users/add" class="btn btn-success">
+                    <i class="fas fa-user-plus me-2"></i> Add New User
+                </a>
+            </div>
+            
+            {{#if formSuccess}}
+            <div class="alert alert-success mb-4">
+                {{formSuccess}}
+            </div>
+            {{/if}}
+            
+            {{#if formError}}
+            <div class="alert alert-danger mb-4">
+                {{formError}}
+            </div>
+            {{/if}}
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">User List</h5>
+                    <div class="btn-group">
+                        <a href="/admin/users" class="btn btn-sm btn-outline-light {{#unless filter}}active{{/unless}}">All</a>
+                        <a href="/admin/users?filter=seller" class="btn btn-sm btn-outline-light {{#if (eq filter 'seller')}}active{{/if}}">Sellers</a>
+                        <a href="/admin/users?filter=user" class="btn btn-sm btn-outline-light {{#if (eq filter 'user')}}active{{/if}}">Customers</a>
+                    </div>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Role</th>
+                                    <th>Joined</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each users}}
+                                <tr>
+                                    <td>{{this.name}}</td>
+                                    <td>{{this.email}}</td>
+                                    <td>
+                                        <span class="badge rounded-pill {{#if (eq this.role 'admin')}}bg-danger{{else if (eq this.role 'seller')}}bg-success{{else}}bg-secondary{{/if}}">
+                                            {{this.role}}
+                                        </span>
+                                    </td>
+                                    <td>{{formatDate this.createdAt}}</td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn btn-sm btn-outline-primary dropdown-toggle" data-bs-toggle="dropdown">
+                                                Change Role
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <form action="/admin/users/role" method="POST">
+                                                        <input type="hidden" name="userId" value="{{this._id}}">
+                                                        <input type="hidden" name="role" value="user">
+                                                        <button type="submit" class="dropdown-item {{#if (eq this.role 'user')}}active{{/if}}">Customer</button>
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <form action="/admin/users/role" method="POST">
+                                                        <input type="hidden" name="userId" value="{{this._id}}">
+                                                        <input type="hidden" name="role" value="seller">
+                                                        <button type="submit" class="dropdown-item {{#if (eq this.role 'seller')}}active{{/if}}">Seller</button>
+                                                    </form>
+                                                </li>
+                                            <!--    
+                                                <li>                                              
+                                                    <form action="/admin/users/role" method="POST">
+                                                        <input type="hidden" name="userId" value="{{this._id}}">
+                                                        <input type="hidden" name="role" value="admin">
+                                                        <button type="submit" class="dropdown-item {{#if (eq this.role 'admin')}}active{{/if}}">Admin</button>
+                                                    </form>
+                                                </li>
+                                            -->    
+                                            </ul>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <tr>
+                                    <td colspan="5" class="text-center py-4">No users found</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

@@ -1,0 +1,412 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Order #{{order.orderNumber}}</h2>
+                <a href="/admin/orders" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+            </div>
+            
+            {{#if success}}
+            <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+                {{success}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{/if}}
+            
+            {{#if error}}
+            <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+                {{error}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {{/if}}
+            
+            <div class="card border-primary mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6">
+                            <div class="mb-3 mb-md-0">
+                                <h6 class="mb-1">Current Status:</h6>
+                                <span class="badge {{#if (eq order.status 'pending')}}bg-warning text-dark{{else if (eq order.status 'processing')}}bg-info{{else if (eq order.status 'shipped')}}bg-primary{{else if (eq order.status 'delivered')}}bg-success{{else if (eq order.status 'cancelled')}}bg-danger{{/if}} p-2">
+                                    {{#if (eq order.status 'pending')}}
+                                        Pending
+                                    {{else if (eq order.status 'processing')}}
+                                        Processing
+                                    {{else if (eq order.status 'shipped')}}
+                                        Shipped
+                                    {{else if (eq order.status 'delivered')}}
+                                        Delivered
+                                    {{else if (eq order.status 'cancelled')}}
+                                        Cancelled
+                                    {{/if}}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <form action="/admin/orders/{{order._id}}/status" method="POST">
+                                <div class="d-flex">
+                                    <select name="status" class="form-select me-2">
+                                        <option value="pending" {{#if (eq order.status 'pending')}}selected{{/if}}>Pending</option>
+                                        <option value="processing" {{#if (eq order.status 'processing')}}selected{{/if}}>Processing</option>
+                                        <option value="shipped" {{#if (eq order.status 'shipped')}}selected{{/if}}>Shipped</option>
+                                        <option value="delivered" {{#if (eq order.status 'delivered')}}selected{{/if}}>Delivered</option>
+                                        <option value="cancelled" {{#if (eq order.status 'cancelled')}}selected{{/if}}>Cancelled</option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary">Update</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-track mt-4">
+                        <ul id="progressbar">
+                            <li class="step0 {{#if (or (eq order.status 'pending') (eq order.status 'processing') (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step1">Ordered</li>
+                            <li class="step0 {{#if (or (eq order.status 'processing') (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step2">Processing</li>
+                            <li class="step0 {{#if (or (eq order.status 'shipped') (eq order.status 'delivered'))}}active{{/if}}" id="step3">Shipped</li>
+                            <li class="step0 {{#if (eq order.status 'delivered')}}active{{/if}}" id="step4">Delivered</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card mb-4 mb-md-0">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Customer Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> {{#if order.user}}{{order.user.name}}{{else}}{{order.shippingDetails.fullName}}{{/if}}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{#if order.user}}{{order.user.email}}{{else}}{{order.shippingDetails.email}}{{/if}}</p>
+                            <p class="mb-0"><strong>Order Date:</strong> {{formatDate order.createdAt}}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Shipping Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> {{order.shippingDetails.fullName}}</p>
+                            <p class="mb-1"><strong>Address:</strong> {{order.shippingDetails.address}}</p>
+                            <p class="mb-1"><strong>City:</strong> {{order.shippingDetails.city}}</p>
+                            <p class="mb-1"><strong>State:</strong> {{order.shippingDetails.state}}</p>
+                            <p class="mb-1"><strong>Zip Code:</strong> {{order.shippingDetails.zipCode}}</p>
+                            <p class="mb-0"><strong>Country:</strong> {{order.shippingDetails.country}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2"><strong>Payment Method:</strong> 
+                        {{#if (eq order.paymentMethod 'jazzcash')}}
+                        <i class="fas fa-mobile-alt me-2"></i>JazzCash
+                        {{else if (eq order.paymentMethod 'bank_transfer')}}
+                        <i class="fas fa-university me-2"></i>Bank Transfer
+                        {{else if (eq order.paymentMethod 'cash_on_delivery')}}
+                        <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                        {{/if}}
+                    </p>
+                    
+                    {{#if (or (eq order.paymentMethod 'jazzcash') (eq order.paymentMethod 'bank_transfer'))}}
+                    {{#if order.paymentDetails}}
+                    <div class="row">
+                        <div class="col-md-6">
+                            {{#if (eq order.paymentMethod 'jazzcash')}}
+                            <p class="mb-2"><strong>JazzCash Number:</strong> {{order.paymentDetails.jazzcashNumber}}</p>
+                            {{else if (eq order.paymentMethod 'bank_transfer')}}
+                            <p class="mb-2"><strong>Account Title:</strong> {{order.paymentDetails.bankTransferDetails.accountTitle}}</p>
+                            <p class="mb-2"><strong>Account Number:</strong> {{order.paymentDetails.bankTransferDetails.accountNumber}}</p>
+                            <p class="mb-2"><strong>Bank Name:</strong> {{order.paymentDetails.bankTransferDetails.bankName}}</p>
+                            <p class="mb-2"><strong>Transaction ID:</strong> {{order.paymentDetails.bankTransferDetails.transactionId}}</p>
+                            {{/if}}
+                            <p class="mb-2"><strong>Payment Status:</strong> 
+                                <span class="badge {{#if (eq order.paymentDetails.paymentStatus 'pending')}}bg-warning text-dark{{else if (eq order.paymentDetails.paymentStatus 'approved')}}bg-success{{else if (eq order.paymentDetails.paymentStatus 'rejected')}}bg-danger{{/if}}">
+                                    {{#if (eq order.paymentDetails.paymentStatus 'pending')}}Pending Review
+                                    {{else if (eq order.paymentDetails.paymentStatus 'approved')}}Approved
+                                    {{else if (eq order.paymentDetails.paymentStatus 'rejected')}}Rejected
+                                    {{/if}}
+                                </span>
+                            </p>
+                            {{#if order.paymentDetails.adminNotes}}
+                            <p class="mb-2"><strong>Admin Notes:</strong> {{order.paymentDetails.adminNotes}}</p>
+                            {{/if}}
+                            {{#if order.paymentDetails.approvedBy}}
+                            <p class="mb-0"><strong>Approved At:</strong> {{formatDate order.paymentDetails.approvedAt}}</p>
+                            {{/if}}
+                        </div>
+                        <div class="col-md-6">
+                            {{#if order.paymentDetails.transactionScreenshot}}
+                            <div class="mb-3">
+                                <strong>Transaction Screenshot:</strong>
+                                <div class="mt-2">
+                                    <img src="{{order.paymentDetails.transactionScreenshot}}" class="img-fluid border rounded" style="max-height: 300px; cursor: pointer;" onclick="openScreenshotModal('{{order.paymentDetails.transactionScreenshot}}')" alt="Transaction Screenshot">
+                                </div>
+                            </div>
+                            {{/if}}
+                            
+                            {{#if (eq order.paymentDetails.paymentStatus 'pending')}}
+                            <div class="d-flex gap-2 mt-3">
+                                <button type="button" class="btn btn-success btn-sm" onclick="approvePayment('{{order._id}}')">
+                                    <i class="fas fa-check me-1"></i>Approve Payment
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="rejectPayment('{{order._id}}')">
+                                    <i class="fas fa-times me-1"></i>Reject Payment
+                                </button>
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                    {{/if}}
+                    {{/if}}
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th class="text-end">Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each order.items}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{this.imageUrl}}" class="img-thumbnail me-3" alt="{{this.name}}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">{{this.name}}</h6>
+                                                <small class="text-muted">{{categoryName this.category}}</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Rs. {{formatPrice this.price}}</td>
+                                    <td>{{this.quantity}}</td>
+                                    <td class="text-end">Rs. {{formatPrice (multiply this.price this.quantity)}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Subtotal:</strong></td>
+                                    <td class="text-end">Rs. {{formatPrice order.subtotal}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Tax (10%):</strong></td>
+                                    <td class="text-end">Rs. {{formatPrice order.tax}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="3" class="text-end"><strong>Total:</strong></td>
+                                    <td class="text-end"><strong>Rs. {{formatPrice order.total}}</strong></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between">
+                <a href="/admin/orders" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+                
+                {{#if (eq order.status 'pending')}}
+                <div>
+                    <form action="/admin/orders/{{order._id}}/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="processing">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check me-2"></i>Approve Order
+                        </button>
+                    </form>
+                    
+                    <form action="/admin/orders/{{order._id}}/status" method="POST" class="d-inline">
+                        <input type="hidden" name="status" value="cancelled">
+                        <button type="submit" class="btn btn-danger ms-2">
+                            <i class="fas fa-times me-2"></i>Cancel Order
+                        </button>
+                    </form>
+                </div>
+                {{/if}}
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Order tracking progress styles */
+.progress-track {
+    margin: 15px auto;
+    position: relative;
+    text-align: center;
+    width: 100%;
+}
+#progressbar {
+    overflow: hidden;
+    margin: 0;
+    padding: 0;
+    counter-reset: step;
+}
+#progressbar li {
+    list-style-type: none;
+    color: #aaa;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    width: 25%;
+    float: left;
+    position: relative;
+    font-weight: 500;
+}
+#progressbar li:before {
+    content: counter(step);
+    counter-increment: step;
+    width: 25px;
+    line-height: 25px;
+    display: block;
+    font-size: 0.8rem;
+    color: #fff;
+    background: #aaa;
+    border-radius: 50%;
+    margin: 0 auto 5px auto;
+    z-index: 2;
+}
+#progressbar li:after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    background: #aaa;
+    position: absolute;
+    left: -50%;
+    top: 12px;
+    z-index: 1;
+}
+#progressbar li:first-child:after {
+    content: none;
+}
+#progressbar li.active {
+    color: #007bff;
+}
+#progressbar li.active:before {
+    background: #007bff;
+}
+#progressbar li.active:after {
+    background: #007bff;
+}
+</style>
+
+<!-- Screenshot Modal -->
+<div class="modal fade" id="screenshotModal" tabindex="-1" aria-labelledby="screenshotModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="screenshotModalLabel">Transaction Screenshot</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="modalScreenshot" src="" class="img-fluid" alt="Transaction Screenshot">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Payment Action Modal -->
+<div class="modal fade" id="paymentActionModal" tabindex="-1" aria-labelledby="paymentActionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentActionModalLabel">Payment Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="paymentActionForm" method="POST">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="adminNotes" class="form-label">Admin Notes (Optional)</label>
+                        <textarea class="form-control" id="adminNotes" name="adminNotes" rows="3" placeholder="Add any notes about this payment decision..."></textarea>
+                    </div>
+                    <input type="hidden" id="paymentAction" name="action" value="">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn" id="confirmActionBtn">Confirm</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openScreenshotModal(imageSrc) {
+    document.getElementById('modalScreenshot').src = imageSrc;
+    new bootstrap.Modal(document.getElementById('screenshotModal')).show();
+}
+
+function approvePayment(orderId) {
+    document.getElementById('paymentActionForm').action = `/admin/orders/${orderId}/payment-action`;
+    document.getElementById('paymentAction').value = 'approve';
+    document.getElementById('paymentActionModalLabel').textContent = 'Approve Payment';
+    document.getElementById('confirmActionBtn').textContent = 'Approve Payment';
+    document.getElementById('confirmActionBtn').className = 'btn btn-success';
+    new bootstrap.Modal(document.getElementById('paymentActionModal')).show();
+}
+
+function rejectPayment(orderId) {
+    document.getElementById('paymentActionForm').action = `/admin/orders/${orderId}/payment-action`;
+    document.getElementById('paymentAction').value = 'reject';
+    document.getElementById('paymentActionModalLabel').textContent = 'Reject Payment';
+    document.getElementById('confirmActionBtn').textContent = 'Reject Payment';
+    document.getElementById('confirmActionBtn').className = 'btn btn-danger';
+    new bootstrap.Modal(document.getElementById('paymentActionModal')).show();
+}
+</script> 

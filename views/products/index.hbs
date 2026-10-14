@@ -1,0 +1,91 @@
+<div class="container mt-4">
+    <div class="row">
+        <!-- Sidebar / Filters -->
+        <div class="col-lg-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Categories</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/products" class="list-group-item list-group-item-action {{#if (eq currentCategory 'all')}}active{{/if}}">
+                        All Products
+                    </a>
+                    <a href="/products?category=men-clothing" class="list-group-item list-group-item-action {{#if (eq currentCategory 'men-clothing')}}active{{/if}}">
+                        Men's Clothing
+                    </a>
+                    <a href="/products?category=women-clothing" class="list-group-item list-group-item-action {{#if (eq currentCategory 'women-clothing')}}active{{/if}}">
+                        Women's Clothing
+                    </a>
+                    <a href="/products?category=accessories" class="list-group-item list-group-item-action {{#if (eq currentCategory 'accessories')}}active{{/if}}">
+                        Accessories
+                    </a>
+                    <a href="/products?category=shoes" class="list-group-item list-group-item-action {{#if (eq currentCategory 'shoes')}}active{{/if}}">
+                        Shoes
+                    </a>
+                    <a href="/products?category=watches" class="list-group-item list-group-item-action {{#if (eq currentCategory 'watches')}}active{{/if}}">
+                        Watches
+                    </a>
+                    <a href="/products?category=gadgets" class="list-group-item list-group-item-action {{#if (eq currentCategory 'gadgets')}}active{{/if}}">
+                        Gadgets
+                    </a>
+                </div>
+            </div>
+            
+            {{#if searchQuery}}
+            <div class="card mt-3">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Current Search</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">Searching for: <strong>{{searchQuery}}</strong></p>
+                    <a href="/products" class="btn btn-outline-secondary btn-sm">Clear Search</a>
+                </div>
+            </div>
+            {{/if}}
+        </div>
+
+        <!-- Product Grid -->
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>
+                    {{#if searchQuery}}
+                        Search Results
+                    {{else if (eq currentCategory 'men-clothing')}}
+                        Men's Clothing
+                    {{else if (eq currentCategory 'women-clothing')}}
+                        Women's Clothing
+                    {{else if (eq currentCategory 'accessories')}}
+                        Accessories
+                    {{else if (eq currentCategory 'shoes')}}
+                        Shoes
+                    {{else if (eq currentCategory 'watches')}}
+                        Watches
+                    {{else if (eq currentCategory 'gadgets')}}
+                        Gadgets
+                    {{else}}
+                        All Products
+                    {{/if}}
+                </h2>
+                
+            </div>
+
+            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                {{#each products}}
+                <div class="col">
+                    {{> product-card product=this}}
+                </div>
+                {{else}}
+                <div class="col-12">
+                    <div class="alert alert-info">
+                        {{#if searchQuery}}
+                            No products found matching "<strong>{{searchQuery}}</strong>". Try a different search term or browse our categories.
+                        {{else}}
+                            No products found for this category. Please check back later.
+                        {{/if}}
+                    </div>
+                </div>
+                {{/each}}
+            </div>
+        </div>
+    </div>
+</div> 

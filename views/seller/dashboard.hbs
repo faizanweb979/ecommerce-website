@@ -1,0 +1,237 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Seller Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/seller/products/add" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                    <a href="/seller/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/seller/sales-report" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-bar me-2"></i> Sales Report
+                    </a>
+                    <a href="/seller/messages" class="list-group-item list-group-item-action">
+                        <i class="fas fa-envelope me-2"></i> Messages
+                        {{#if unreadMessages}}
+                        <span class="badge bg-danger ms-1">{{unreadMessages}}</span>
+                        {{/if}}
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Seller Dashboard</h2>
+                <a href="/seller/products/add" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i> Add New Product
+                </a>
+            </div>
+
+            {{#if formSuccess}}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{formSuccess}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+            {{#if formError}}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{formError}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+
+            <!-- Stats Cards -->
+            <div class="row mb-4">
+                <div class="col-md-4 mb-3">
+                    <div class="card border-success h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-2x text-success mb-2"></i>
+                            <h4 class="text-success">{{productCount}}</h4>
+                            <p class="text-muted mb-0">Active Products</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-primary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shopping-bag fa-2x text-primary mb-2"></i>
+                            <h4 class="text-primary">{{orderCount}}</h4>
+                            <p class="text-muted mb-0">Total Orders</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <div class="card border-warning h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-rupee-sign fa-2x text-warning mb-2"></i>
+                            <h4 class="text-warning">Rs. {{totalRevenue}}</h4>
+                            <p class="text-muted mb-0">Total Revenue</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            {{#if recentOrders.length}}
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Recent Orders</h5>
+                    <a href="/seller/orders" class="btn btn-sm btn-light">View All</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each recentOrders}}
+                                <tr>
+                                    <td><strong>{{orderNumber}}</strong></td>
+                                    <td>{{user.name}}</td>
+                                    <td>{{formatDate createdAt}}</td>
+                                    <td>
+                                        {{#if (eq status 'pending')}}<span class="badge bg-warning text-dark">Pending</span>
+                                        {{else if (eq status 'processing')}}<span class="badge bg-info">Processing</span>
+                                        {{else if (eq status 'shipped')}}<span class="badge bg-primary">Shipped</span>
+                                        {{else if (eq status 'delivered')}}<span class="badge bg-success">Delivered</span>
+                                        {{else}}<span class="badge bg-danger">Cancelled</span>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        <a href="/seller/orders/{{_id}}" class="btn btn-sm btn-outline-primary">View</a>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {{/if}}
+
+            <!-- Products List -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Your Products</h5>
+                </div>
+                <div class="card-body p-0">
+                    {{#if products.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Category</th>
+                                    <th>Stock</th>
+                                    <th>Approval</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each products}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{this.imageUrl}}" alt="{{this.name}}" class="img-thumbnail me-2" style="width:50px;height:50px;object-fit:cover;">
+                                            <a href="/products/{{this._id}}" class="text-decoration-none">{{this.name}}</a>
+                                        </div>
+                                    </td>
+                                    <td>Rs. {{this.price}}</td>
+                                    <td>{{this.category}}</td>
+                                    <td>
+                                        <span class="badge {{#if this.inStock}}bg-success{{else}}bg-danger{{/if}}">
+                                            {{#if this.inStock}}In Stock{{else}}Out of Stock{{/if}}
+                                        </span>
+                                        <small class="text-muted d-block">{{this.stockQuantity}} units</small>
+                                        {{#if (lt this.stockQuantity 5)}}
+                                        {{#if this.inStock}}
+                                        <span class="badge bg-warning text-dark mt-1">Low Stock</span>
+                                        {{/if}}
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        {{#if (eq this.approvalStatus 'approved')}}
+                                        <span class="badge bg-success">Approved</span>
+                                        {{else if (eq this.approvalStatus 'rejected')}}
+                                        <span class="badge bg-danger" title="{{this.rejectionReason}}">Rejected</span>
+                                        {{else}}
+                                        <span class="badge bg-warning text-dark">Pending Review</span>
+                                        {{/if}}
+                                    </td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <a href="/seller/products/edit/{{this._id}}" class="btn btn-sm btn-outline-secondary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                data-bs-toggle="modal" data-bs-target="#deleteModal{{this._id}}">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{this._id}}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete <strong>{{this.name}}</strong>?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="/seller/products/delete/{{this._id}}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div class="text-center py-5">
+                        <i class="fas fa-box-open fa-3x text-muted mb-3"></i>
+                        <h5>You don't have any products yet</h5>
+                        <p class="text-muted">Start selling by adding your first product</p>
+                        <a href="/seller/products/add" class="btn btn-success mt-2">
+                            <i class="fas fa-plus-circle me-2"></i> Add New Product
+                        </a>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

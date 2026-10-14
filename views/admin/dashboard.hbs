@@ -1,0 +1,152 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                        {{#if pendingProductCount}}
+                        <span class="badge bg-danger ms-1">{{pendingProductCount}}</span>
+                        {{/if}}
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/admin/sales-report" class="list-group-item list-group-item-action">
+                        <i class="fas fa-chart-bar me-2"></i> Sales Report
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/admin/feedbacks" class="list-group-item list-group-item-action">
+                        <i class="fas fa-comments me-2"></i> Manage Feedbacks
+                        {{#if pendingReviewCount}}
+                        <span class="badge bg-danger ms-1">{{pendingReviewCount}}</span>
+                        {{/if}}
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <h2 class="mb-4">Admin Dashboard</h2>
+            
+            <div class="row">
+                <!-- Users Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-primary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                            <h5 class="card-title">Total Users</h5>
+                            <p class="card-text display-4">{{userCount}}</p>
+                            <a href="/admin/users" class="btn btn-sm btn-outline-primary mt-2">Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Products Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-success h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-box fa-3x text-success mb-3"></i>
+                            <h5 class="card-title">Total Products</h5>
+                            <p class="card-text display-4">{{productCount}}</p>
+                            {{#if pendingProductCount}}
+                            <p class="text-warning mb-1"><small><i class="fas fa-clock"></i> {{pendingProductCount}} pending approval</small></p>
+                            {{/if}}
+                            <a href="/admin/products?approval=pending" class="btn btn-sm btn-outline-success mt-2">Review Queue</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Orders Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-warning h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-shopping-cart fa-3x text-warning mb-3"></i>
+                            <h5 class="card-title">Total Orders</h5>
+                            <p class="card-text display-4">{{orderCount}}</p>
+                            <a href="/admin/orders" class="btn btn-sm btn-outline-warning mt-2">Manage Orders</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Sellers Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-danger h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-store fa-3x text-danger mb-3"></i>
+                            <h5 class="card-title">Total Sellers</h5>
+                            <p class="card-text display-4">{{sellerCount}}</p>
+                            <a href="/admin/users?filter=seller" class="btn btn-sm btn-outline-danger mt-2">View Sellers</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Blogs Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-info h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-blog fa-3x text-info mb-3"></i>
+                            <h5 class="card-title">Total Blogs</h5>
+                            <p class="card-text display-4">{{blogCount}}</p>
+                            <a href="/admin/blogs" class="btn btn-sm btn-outline-info mt-2">Manage Blogs</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Feedbacks Card -->
+                <div class="col-md-3 mb-4">
+                    <div class="card border-secondary h-100">
+                        <div class="card-body text-center">
+                            <i class="fas fa-comments fa-3x text-secondary mb-3"></i>
+                            <h5 class="card-title">Total Reviews</h5>
+                            <p class="card-text display-4">{{feedbackCount}}</p>
+                            {{#if pendingReviewCount}}
+                            <p class="text-warning mb-1"><small><i class="fas fa-clock"></i> {{pendingReviewCount}} pending approval</small></p>
+                            {{/if}}
+                            <a href="/admin/feedbacks?filter=pending" class="btn btn-sm btn-outline-secondary mt-2">Review Queue</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <a href="/admin/users/add" class="btn btn-outline-primary mb-2 w-100">
+                                <i class="fas fa-user-plus me-2"></i> Add New User
+                            </a>
+                        </div>
+                        <div class="col-md-6">
+                            <a href="/admin/products/add" class="btn btn-outline-success mb-2 w-100">
+                                <i class="fas fa-plus-circle me-2"></i> Add New Product
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

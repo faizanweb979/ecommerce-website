@@ -1,0 +1,168 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Seller Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/seller/products/add" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus-circle me-2"></i> Add New Product
+                    </a>
+                    <a href="/seller/orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Order #{{order.orderNumber}}</h2>
+                <a href="/seller/orders" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Orders
+                </a>
+            </div>
+
+            {{#if formSuccess}}
+            <div class="alert alert-success alert-dismissible fade show">
+                {{formSuccess}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+            {{#if formError}}
+            <div class="alert alert-danger alert-dismissible fade show">
+                {{formError}}<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {{/if}}
+
+            <div class="row">
+                <!-- Order Status & Action -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Order Status</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-2">
+                                Current Status:
+                                {{#if (eq order.status 'pending')}}<span class="badge bg-warning text-dark fs-6">Pending</span>
+                                {{else if (eq order.status 'processing')}}<span class="badge bg-info fs-6">Processing</span>
+                                {{else if (eq order.status 'shipped')}}<span class="badge bg-primary fs-6">Shipped</span>
+                                {{else if (eq order.status 'delivered')}}<span class="badge bg-success fs-6">Delivered</span>
+                                {{else}}<span class="badge bg-danger fs-6">Cancelled</span>
+                                {{/if}}
+                            </p>
+                            <p class="mb-3">
+                                Payment:
+                                {{#if (eq order.paymentDetails.paymentStatus 'approved')}}<span class="badge bg-success">Approved</span>
+                                {{else if (eq order.paymentDetails.paymentStatus 'rejected')}}<span class="badge bg-danger">Rejected</span>
+                                {{else}}<span class="badge bg-warning text-dark">Pending</span>
+                                {{/if}}
+                            </p>
+
+                            {{#if (eq order.status 'processing')}}
+                            <form action="/seller/orders/{{order._id}}/status" method="POST">
+                                <input type="hidden" name="status" value="shipped">
+                                <button type="submit" class="btn btn-primary w-100">
+                                    <i class="fas fa-shipping-fast me-2"></i>Mark as Shipped
+                                </button>
+                            </form>
+                            {{else if (eq order.status 'pending')}}
+                            <div class="alert alert-info mb-0">
+                                <i class="fas fa-info-circle me-1"></i> Waiting for payment approval before shipping.
+                            </div>
+                            {{else if (eq order.status 'shipped')}}
+                            <div class="alert alert-primary mb-0">
+                                <i class="fas fa-check-circle me-1"></i> Order has been shipped. Awaiting delivery confirmation.
+                            </div>
+                            {{else if (eq order.status 'delivered')}}
+                            <div class="alert alert-success mb-0">
+                                <i class="fas fa-check-double me-1"></i> Order delivered successfully.
+                            </div>
+                            {{else}}
+                            <div class="alert alert-danger mb-0">
+                                <i class="fas fa-times-circle me-1"></i> This order was cancelled.
+                            </div>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0">Customer & Shipping</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="mb-1"><strong>Name:</strong> {{order.shippingDetails.fullName}}</p>
+                            <p class="mb-1"><strong>Email:</strong> {{order.user.email}}</p>
+                            <p class="mb-1"><strong>Address:</strong> {{order.shippingDetails.address}}</p>
+                            <p class="mb-1"><strong>City:</strong> {{order.shippingDetails.city}}, {{order.shippingDetails.state}}</p>
+                            <p class="mb-1"><strong>Country:</strong> {{order.shippingDetails.country}}</p>
+                            <p class="mb-0"><strong>Zip:</strong> {{order.shippingDetails.zipCode}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Your Items in This Order -->
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Your Items in This Order</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Qty</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each sellerItems}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{imageUrl}}" alt="{{name}}" style="width:45px;height:45px;object-fit:cover;" class="rounded me-2">
+                                            {{name}}
+                                        </div>
+                                    </td>
+                                    <td>Rs. {{price}}</td>
+                                    <td>{{quantity}}</td>
+                                    <td>Rs. {{multiply price quantity}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="3" class="text-end fw-bold">Your Total:</td>
+                                    <td class="fw-bold text-success">Rs. {{sellerTotal}}</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-muted small">
+                <i class="fas fa-info-circle me-1"></i>
+                Order placed on {{formatDateTime order.createdAt}}
+            </p>
+        </div>
+    </div>
+</div>

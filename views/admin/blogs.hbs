@@ -1,0 +1,138 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Manage Blogs</h2>
+                <a href="/blogs/admin/add" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i> Add New Blog Post
+                </a>
+            </div>
+            
+            {{#if formSuccess}}
+            <div class="alert alert-success mb-4">
+                {{formSuccess}}
+            </div>
+            {{/if}}
+            
+            {{#if formError}}
+            <div class="alert alert-danger mb-4">
+                {{formError}}
+            </div>
+            {{/if}}
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Blog Posts</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Author</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Views</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each blogs}}
+                                <tr>
+                                    <td>
+                                        <a href="/blogs/{{this._id}}" class="text-decoration-none">{{this.title}}</a>
+                                    </td>
+                                    <td>{{this.category}}</td>
+                                    <td>{{#if this.author}}{{this.author.name}}{{else}}Unknown Author{{/if}}</td>
+                                    <td>{{formatDate this.createdAt}}</td>
+                                    <td>
+                                        <span class="badge {{#if this.isPublished}}bg-success{{else}}bg-danger{{/if}}">
+                                            {{#if this.isPublished}}Published{{else}}Draft{{/if}}
+                                        </span>
+                                    </td>
+                                    <td>{{this.views}}</td>
+                                    <td class="text-end">
+                                        <div class="btn-group">
+                                            <form action="/admin/blogs/toggle-publish/{{this._id}}" method="POST" class="d-inline">
+                                                <button type="submit" class="btn btn-sm {{#if this.isPublished}}btn-outline-danger{{else}}btn-outline-success{{/if}} me-1" title="{{#if this.isPublished}}Unpublish{{else}}Publish{{/if}}">
+                                                    <i class="fas {{#if this.isPublished}}fa-eye-slash{{else}}fa-eye{{/if}}"></i>
+                                                </button>
+                                            </form>
+                                            <a href="/blogs/admin/edit/{{this._id}}" class="btn btn-sm btn-outline-primary me-1" title="Edit">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{this._id}}" title="Delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{this._id}}" tabindex="-1" aria-hidden="true">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title">Confirm Delete</h5>
+                                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        Are you sure you want to delete <strong>{{this.title}}</strong>?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                                        <form action="/admin/blogs/delete/{{this._id}}" method="POST">
+                                                            <button type="submit" class="btn btn-danger">Delete</button>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {{else}}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">No blog posts found</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

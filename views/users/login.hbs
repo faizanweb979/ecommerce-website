@@ -1,0 +1,58 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Login to Your Account</h3>
+                </div>
+                <div class="card-body p-4">
+                    {{#if successMessage}}
+                    <div class="alert alert-success">
+                        {{successMessage}}
+                    </div>
+                    {{/if}}
+                    {{#if formError}}
+                    <div class="alert alert-danger">
+                        {{formError}}
+                        {{#if showResend}}
+                        <div class="mt-2">
+                            <a href="/users/resend-verification?email={{resendEmail}}" class="alert-link">Resend verification email</a>
+                        </div>
+                        {{/if}}
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/users/login" method="POST" autocomplete="off" id="loginForm">
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="rememberMe" name="rememberMe">
+                            <label class="form-check-label" for="rememberMe">Remember me</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Login</button>
+                    </form>
+                    <div class="text-center mt-3">
+                        <a href="/users/forgot-password" class="text-decoration-none">Forgot your password?</a>
+                    </div>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <p class="mb-0">Don't have an account? <a href="/users/signup">Sign up here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Clear fields on every page load to prevent browser autofill
+    window.addEventListener('load', function () {
+        var form = document.getElementById('loginForm');
+        if (form) form.reset();
+    });
+</script>

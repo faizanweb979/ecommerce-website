@@ -1,0 +1,215 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Account Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/my-orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/wishlist" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i> My Wishlist
+                    </a>
+                    {{#if (eq user.role 'seller')}}
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-store me-2"></i> Seller Dashboard
+                    </a>
+                    {{/if}}
+                    {{#if (eq user.role 'admin')}}
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog me-2"></i> Admin Dashboard
+                    </a>
+                    {{/if}}
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            {{#if successMessage}}
+            <div class="alert alert-success mb-4">
+                {{successMessage}}
+            </div>
+            {{/if}}
+            
+            {{#if error}}
+            <div class="alert alert-danger mb-4">
+                {{error}}
+            </div>
+            {{/if}}
+            
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Order #{{order.orderNumber}}</h2>
+                <a href="/my-orders" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Orders
+                </a>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Order Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Order Date:</strong> {{formatDate order.createdAt}}</p>
+                            <p><strong>Order Status:</strong> 
+                                {{#if (eq order.status 'pending')}}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {{else if (eq order.status 'processing')}}
+                                <span class="badge bg-info">Processing</span>
+                                {{else if (eq order.status 'shipped')}}
+                                <span class="badge bg-primary">Shipped</span>
+                                {{else if (eq order.status 'delivered')}}
+                                <span class="badge bg-success">Delivered</span>
+                                {{else if (eq order.status 'cancelled')}}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {{/if}}
+                            </p>
+                            <p><strong>Payment Method:</strong> 
+                                {{#if (eq order.paymentMethod 'jazzcash')}}
+                                <i class="fas fa-mobile-alt me-2"></i>JazzCash
+                                {{else if (eq order.paymentMethod 'bank_transfer')}}
+                                <i class="fas fa-university me-2"></i>Bank Transfer
+                                {{else if (eq order.paymentMethod 'cash_on_delivery')}}
+                                <i class="fas fa-money-bill-wave me-2"></i>Cash on Delivery
+                                {{/if}}
+                            </p>
+                            
+                            {{#if (or (eq order.status 'pending') (eq order.status 'processing'))}}
+                            <form action="/my-orders/{{order._id}}/cancel" method="POST" onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                <button type="submit" class="btn btn-sm btn-danger">
+                                    <i class="fas fa-times me-2"></i>Cancel Order
+                                </button>
+                            </form>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">Shipping Information</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Name:</strong> {{order.shippingDetails.fullName}}</p>
+                            <p><strong>Email:</strong> {{order.shippingDetails.email}}</p>
+                            <p><strong>Address:</strong><br>
+                                {{order.shippingDetails.address}}<br>
+                                {{order.shippingDetails.city}}, {{order.shippingDetails.state}} {{order.shippingDetails.zipCode}}<br>
+                                {{order.shippingDetails.country}}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Items</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each order.items}}
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <img src="{{this.imageUrl}}" class="img-thumbnail me-3" alt="{{this.name}}" style="width: 50px; height: 50px; object-fit: cover;">
+                                            <div>
+                                                <h6 class="mb-0">{{this.name}}</h6>
+                                                <small class="text-muted">
+                                                    {{#if (eq this.category 'men-clothing')}}
+                                                        Men's Clothing
+                                                    {{else if (eq this.category 'women-clothing')}}
+                                                        Women's Clothing
+                                                    {{else if (eq this.category 'accessories')}}
+                                                        Accessories
+                                                    {{else if (eq this.category 'electronics')}}
+                                                        Gadgets
+                                                    {{/if}}
+                                                </small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Rs. {{formatPrice this.price}}</td>
+                                    <td>{{this.quantity}}</td>
+                                    <td>Rs. {{formatPrice (multiply this.price this.quantity)}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Order Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 offset-md-6">
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Subtotal:</strong>
+                                <span>{{formatPrice order.subtotal}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Tax (10%):</strong>
+                                <span>{{formatPrice order.tax}}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <strong>Shipping:</strong>
+                                <span>Free</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                                <h5>Total:</h5>
+                                <h5>{{formatPrice order.total}}</h5>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper functions for formatting
+    Handlebars.registerHelper('formatDate', function(date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+    });
+    
+    Handlebars.registerHelper('formatPrice', function(price) {
+        return parseFloat(price).toFixed(2);
+    });
+    
+    Handlebars.registerHelper('multiply', function(a, b) {
+        return a * b;
+    });
+    
+    Handlebars.registerHelper('or', function() {
+        return Array.prototype.slice.call(arguments, 0, -1).some(Boolean);
+    });
+</script> 

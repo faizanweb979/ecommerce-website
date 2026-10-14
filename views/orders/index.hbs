@@ -1,0 +1,110 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Account Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/my-orders" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-shopping-bag me-2"></i> My Orders
+                    </a>
+                    <a href="/wishlist" class="list-group-item list-group-item-action">
+                        <i class="fas fa-heart me-2"></i> My Wishlist
+                    </a>
+                    {{#if (eq user.role 'seller')}}
+                    <a href="/seller/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-store me-2"></i> Seller Dashboard
+                    </a>
+                    {{/if}}
+                    {{#if (eq user.role 'admin')}}
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-cog me-2"></i> Admin Dashboard
+                    </a>
+                    {{/if}}
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="card">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">My Orders</h5>
+                </div>
+                <div class="card-body">
+                    {{#if orders.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Date</th>
+                                    <th>Items</th>
+                                    <th>Total</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each orders}}
+                                <tr>
+                                    <td>{{this.orderNumber}}</td>
+                                    <td>{{formatDate this.createdAt}}</td>
+                                    <td>{{this.items.length}} item(s)</td>
+                                    <td>{{formatPrice this.total}}</td>
+                                    <td>
+                                        {{#if (eq this.status 'pending')}}
+                                        <span class="badge bg-warning text-dark">Pending</span>
+                                        {{else if (eq this.status 'processing')}}
+                                        <span class="badge bg-info">Processing</span>
+                                        {{else if (eq this.status 'shipped')}}
+                                        <span class="badge bg-primary">Shipped</span>
+                                        {{else if (eq this.status 'delivered')}}
+                                        <span class="badge bg-success">Delivered</span>
+                                        {{else if (eq this.status 'cancelled')}}
+                                        <span class="badge bg-danger">Cancelled</span>
+                                        {{/if}}
+                                    </td>
+                                    <td>
+                                        <a href="/my-orders/{{this._id}}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <div class="text-center py-5">
+                        <i class="fas fa-shopping-bag fa-4x mb-3 text-muted"></i>
+                        <h4>No Orders Yet</h4>
+                        <p class="text-muted mb-4">You haven't placed any orders yet.</p>
+                        <a href="/products" class="btn btn-primary">Start Shopping</a>
+                    </div>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Helper function for formatting dates and prices
+    Handlebars.registerHelper('formatDate', function(date) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(date).toLocaleDateString('en-US', options);
+    });
+    
+    Handlebars.registerHelper('formatPrice', function(price) {
+        return parseFloat(price).toFixed(2);
+    });
+</script> 

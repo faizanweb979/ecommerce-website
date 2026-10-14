@@ -1,0 +1,92 @@
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="mb-0">Create an Account</h3>
+                </div>
+                <div class="card-body p-4">
+                    {{#if formError}}
+                    <div class="alert alert-danger">
+                        {{formError}}
+                    </div>
+                    {{/if}}
+                    
+                    <form action="/users/signup" method="POST" id="signupForm" autocomplete="off">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="name" name="name" autocomplete="off" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="email" class="form-label">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" autocomplete="off" required>
+                            <div class="form-text">We'll never share your email with anyone else.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" autocomplete="new-password" required minlength="8">
+                            <div class="form-text">Min 8 characters, must include letters, numbers, and a special character (e.g. <code>!@#$%</code>).</div>
+                            <div id="passwordStrength" class="mt-1 small"></div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirmPassword" class="form-label">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" autocomplete="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="role" class="form-label">Account Type</label>
+                            <select class="form-select" id="role" name="role" required>
+                                <option value="user" selected>Customer</option>
+                                <option value="seller">Seller</option>
+                            </select>
+                            <div class="form-text">Select 'Seller' if you want to sell products on our platform.</div>
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="terms" required>
+                            <label class="form-check-label" for="terms">I agree to the <a href="/terms-conditions">Terms and Conditions</a></label>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Sign Up</button>
+                    </form>
+                </div>
+                <div class="card-footer bg-light text-center">
+                    <p class="mb-0">Already have an account? <a href="/users/login">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
+    document.getElementById('password').addEventListener('input', function() {
+        const val = this.value;
+        const el = document.getElementById('passwordStrength');
+        if (!val) { el.textContent = ''; return; }
+        if (passwordRegex.test(val)) {
+            el.innerHTML = '<span class="text-success"><i class="fas fa-check-circle"></i> Strong password</span>';
+        } else {
+            el.innerHTML = '<span class="text-danger"><i class="fas fa-times-circle"></i> Must be 8+ chars with letters, numbers & special character</span>';
+        }
+    });
+
+    // Clear fields on every page load to prevent browser autofill
+    window.addEventListener('load', function () {
+        var form = document.getElementById('signupForm');
+        if (form) form.reset();
+    });
+
+    document.getElementById('signupForm').addEventListener('submit', function(e) {
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+
+        if (!passwordRegex.test(password)) {
+            e.preventDefault();
+            alert('Password must be at least 8 characters and include letters, numbers, and a special character.');
+            return;
+        }
+        if (password !== confirmPassword) {
+            e.preventDefault();
+            alert('Passwords do not match!');
+        }
+    });
+</script> 

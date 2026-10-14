@@ -1,0 +1,332 @@
+<div class="container my-5">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 mb-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Admin Menu</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="/admin/dashboard" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tachometer-alt me-2"></i> Dashboard
+                    </a>
+                    <a href="/admin/users" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users me-2"></i> Manage Users
+                    </a>
+                    <a href="/admin/products" class="list-group-item list-group-item-action">
+                        <i class="fas fa-box me-2"></i> Manage Products
+                    </a>
+                    <a href="/admin/orders" class="list-group-item list-group-item-action">
+                        <i class="fas fa-shopping-cart me-2"></i> Manage Orders
+                    </a>
+                    <a href="/admin/sales-report" class="list-group-item list-group-item-action active">
+                        <i class="fas fa-chart-bar me-2"></i> Sales Report
+                    </a>
+                    <a href="/admin/blogs" class="list-group-item list-group-item-action">
+                        <i class="fas fa-blog me-2"></i> Manage Blogs
+                    </a>
+                    <a href="/admin/feedbacks" class="list-group-item list-group-item-action">
+                        <i class="fas fa-comments me-2"></i> Manage Feedbacks
+                    </a>
+                    <a href="/users/profile" class="list-group-item list-group-item-action">
+                        <i class="fas fa-user me-2"></i> My Profile
+                    </a>
+                    <a href="/users/logout" class="list-group-item list-group-item-action text-danger">
+                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2><i class="fas fa-chart-line me-2 text-primary"></i> Sales Report</h2>
+            </div>
+
+            <!-- Date Filter -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="d-flex flex-wrap gap-2 align-items-center mb-3">
+                        <a href="/admin/sales-report?period=week" class="btn btn-sm {{#if (eq activePeriod 'week')}}btn-primary{{else}}btn-outline-primary{{/if}}">This Week</a>
+                        <a href="/admin/sales-report?period=month" class="btn btn-sm {{#if (eq activePeriod 'month')}}btn-primary{{else}}btn-outline-primary{{/if}}">This Month</a>
+                        <a href="/admin/sales-report?period=year" class="btn btn-sm {{#if (eq activePeriod 'year')}}btn-primary{{else}}btn-outline-primary{{/if}}">This Year</a>
+                    </div>
+                    <form method="GET" action="/admin/sales-report" class="row g-2 align-items-end">
+                        <div class="col-auto">
+                            <label class="form-label small mb-1">From</label>
+                            <input type="date" name="from" class="form-control form-control-sm" value="{{fromDate}}">
+                        </div>
+                        <div class="col-auto">
+                            <label class="form-label small mb-1">To</label>
+                            <input type="date" name="to" class="form-control form-control-sm" value="{{toDate}}">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- KPI Cards -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="card text-center border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-4 fw-bold text-success">PKR {{totalRevenue}}</div>
+                            <div class="text-muted small">Total Revenue</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="card text-center border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-4 fw-bold text-primary">{{totalOrders}}</div>
+                            <div class="text-muted small">Total Orders</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="card text-center border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-4 fw-bold text-warning">{{totalItemsSold}}</div>
+                            <div class="text-muted small">Items Sold</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="card text-center border-0 shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="fs-4 fw-bold text-info">PKR {{avgOrderValue}}</div>
+                            <div class="text-muted small">Avg Order Value</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Revenue Chart -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white fw-semibold">Revenue Over Time</div>
+                <div class="card-body">
+                    <canvas id="revenueChart" height="100"></canvas>
+                </div>
+            </div>
+
+            <!-- Status + Payment Method -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white fw-semibold">Order Status Breakdown</div>
+                        <div class="card-body">
+                            <canvas id="statusChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white fw-semibold">Payment Methods</div>
+                        <div class="card-body">
+                            <canvas id="paymentChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Category Breakdown -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-white fw-semibold">Sales by Category</div>
+                <div class="card-body p-0">
+                    {{#if categoryBreakdown.length}}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Category</th>
+                                    <th class="text-center">Items Sold</th>
+                                    <th class="text-end">Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each categoryBreakdown}}
+                                <tr>
+                                    <td>{{cat}}</td>
+                                    <td class="text-center">{{qty}}</td>
+                                    <td class="text-end text-success fw-semibold">PKR {{formatPrice revenue}}</td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <p class="text-muted p-3 mb-0">No data available.</p>
+                    {{/if}}
+                </div>
+            </div>
+
+            <!-- Top Products + Top Sellers -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white fw-semibold">Top Products by Revenue</div>
+                        <div class="card-body p-0">
+                            {{#if topProducts.length}}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr><th>#</th><th>Product</th><th class="text-center">Qty</th><th class="text-end">Revenue</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each topProducts}}
+                                        <tr>
+                                            <td class="text-muted">{{add @index 1}}</td>
+                                            <td>{{name}}</td>
+                                            <td class="text-center">{{qty}}</td>
+                                            <td class="text-end text-success fw-semibold">PKR {{formatPrice revenue}}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{else}}
+                            <p class="text-muted p-3 mb-0">No data.</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header bg-white fw-semibold">Top Sellers by Revenue</div>
+                        <div class="card-body p-0">
+                            {{#if topSellers.length}}
+                            <div class="table-responsive">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light">
+                                        <tr><th>#</th><th>Seller</th><th class="text-center">Orders</th><th class="text-end">Revenue</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        {{#each topSellers}}
+                                        <tr>
+                                            <td class="text-muted">{{add @index 1}}</td>
+                                            <td>{{name}}</td>
+                                            <td class="text-center">{{orders}}</td>
+                                            <td class="text-end text-primary fw-semibold">PKR {{formatPrice revenue}}</td>
+                                        </tr>
+                                        {{/each}}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {{else}}
+                            <p class="text-muted p-3 mb-0">No data.</p>
+                            {{/if}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white fw-semibold">Recent Orders (up to 20)</div>
+                <div class="card-body p-0">
+                    {{#if orders.length}}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Order #</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Payment</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {{#each orders}}
+                                <tr>
+                                    <td><span class="text-muted small">#</span>{{orderNumber}}</td>
+                                    <td>{{user.name}}</td>
+                                    <td class="small text-muted">{{formatDate createdAt}}</td>
+                                    <td class="small">{{paymentMethod}}</td>
+                                    <td>
+                                        {{#if (eq status 'delivered')}}<span class="badge bg-success">Delivered</span>
+                                        {{else if (eq status 'shipped')}}<span class="badge bg-info">Shipped</span>
+                                        {{else if (eq status 'processing')}}<span class="badge bg-primary">Processing</span>
+                                        {{else if (eq status 'cancelled')}}<span class="badge bg-danger">Cancelled</span>
+                                        {{else}}<span class="badge bg-warning text-dark">Pending</span>{{/if}}
+                                    </td>
+                                    <td class="text-end fw-semibold">PKR {{formatPrice total}}</td>
+                                    <td><a href="/admin/orders/{{_id}}" class="btn btn-sm btn-outline-secondary">View</a></td>
+                                </tr>
+                                {{/each}}
+                            </tbody>
+                        </table>
+                    </div>
+                    {{else}}
+                    <p class="text-muted p-3 mb-0">No orders found for this period.</p>
+                    {{/if}}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+(function() {
+    const labels = {{{chartLabels}}};
+    const revenue = {{{chartRevenue}}};
+    const ordersData = {{{chartOrders}}};
+
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'line',
+        data: {
+            labels,
+            datasets: [{
+                label: 'Revenue (PKR)',
+                data: revenue,
+                borderColor: '#0d6efd',
+                backgroundColor: 'rgba(13,110,253,0.1)',
+                fill: true,
+                tension: 0.4,
+                pointRadius: 3
+            }, {
+                label: 'Orders',
+                data: ordersData,
+                borderColor: '#198754',
+                backgroundColor: 'rgba(25,135,84,0.05)',
+                fill: false,
+                tension: 0.4,
+                pointRadius: 3,
+                yAxisID: 'y2'
+            }]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            scales: {
+                y: { beginAtZero: true, title: { display: true, text: 'Revenue (PKR)' } },
+                y2: { beginAtZero: true, position: 'right', title: { display: true, text: 'Orders' }, grid: { drawOnChartArea: false } }
+            }
+        }
+    });
+
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
+            datasets: [{ data: [{{statusCount.pending}},{{statusCount.processing}},{{statusCount.shipped}},{{statusCount.delivered}},{{statusCount.cancelled}}], backgroundColor: ['#ffc107','#0d6efd','#0dcaf0','#198754','#dc3545'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+
+    new Chart(document.getElementById('paymentChart'), {
+        type: 'doughnut',
+        data: {
+            labels: ['JazzCash', 'Bank Transfer', 'Cash on Delivery'],
+            datasets: [{ data: [{{paymentMethodCount.jazzcash}},{{paymentMethodCount.bank_transfer}},{{paymentMethodCount.cash_on_delivery}}], backgroundColor: ['#6f42c1','#fd7e14','#20c997'] }]
+        },
+        options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+    });
+})();
+</script>
